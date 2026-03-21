@@ -77,7 +77,12 @@ async function registryInnerPlugin(designer: IDesigner, editor: IEditor, plugins
   // 注册一批内置插件
   const componentMetaParserPlugin = componentMetaParser(designer);
   const defaultPanelRegistryPlugin = defaultPanelRegistry(editor);
-  await plugins.register(OutlinePlugin, {}, { autoInit: true });
+
+  // 条件注册 OutlinePlugin：如果未配置禁用，则注册
+  if (!engineConfig.get('disableOutlinePane')) {
+    await plugins.register(OutlinePlugin, {}, { autoInit: true });
+  }
+
   await plugins.register(componentMetaParserPlugin);
   await plugins.register(setterRegistry, {});
   await plugins.register(defaultPanelRegistryPlugin);
@@ -87,7 +92,9 @@ async function registryInnerPlugin(designer: IDesigner, editor: IEditor, plugins
   await plugins.register(CommandPlugin, {});
 
   return () => {
-    plugins.delete(OutlinePlugin.pluginName);
+    if (plugins.has(OutlinePlugin.pluginName)) {
+      plugins.delete(OutlinePlugin.pluginName);
+    }
     plugins.delete(componentMetaParserPlugin.pluginName);
     plugins.delete(setterRegistry.pluginName);
     plugins.delete(defaultPanelRegistryPlugin.pluginName);
