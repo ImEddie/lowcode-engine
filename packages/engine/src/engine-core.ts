@@ -67,7 +67,7 @@ import { shellModelFactory } from './modules/shell-model-factory';
 import { builtinHotkey } from './inner-plugins/builtin-hotkey';
 import { defaultContextMenu } from './inner-plugins/default-context-menu';
 import { CommandPlugin } from '@alilc/lowcode-plugin-command';
-import { OutlinePlugin } from '@alilc/lowcode-plugin-outline-pane';
+// import { OutlinePlugin } from '@alilc/lowcode-plugin-outline-pane';
 
 export * from './modules/skeleton-types';
 export * from './modules/designer-types';
@@ -78,10 +78,8 @@ async function registryInnerPlugin(designer: IDesigner, editor: IEditor, plugins
   const componentMetaParserPlugin = componentMetaParser(designer);
   const defaultPanelRegistryPlugin = defaultPanelRegistry(editor);
 
-  // 条件注册 OutlinePlugin：如果未配置禁用，则注册
-  if (!engineConfig.get('disableOutlinePane')) {
-    await plugins.register(OutlinePlugin, {}, { autoInit: true });
-  }
+  // ❌ OutlinePlugin 已禁用（不需要大纲树）
+  // await plugins.register(OutlinePlugin, {}, { autoInit: true });
 
   await plugins.register(componentMetaParserPlugin);
   await plugins.register(setterRegistry, {});
@@ -92,9 +90,6 @@ async function registryInnerPlugin(designer: IDesigner, editor: IEditor, plugins
   await plugins.register(CommandPlugin, {});
 
   return () => {
-    if (plugins.has(OutlinePlugin.pluginName)) {
-      plugins.delete(OutlinePlugin.pluginName);
-    }
     plugins.delete(componentMetaParserPlugin.pluginName);
     plugins.delete(setterRegistry.pluginName);
     plugins.delete(defaultPanelRegistryPlugin.pluginName);
