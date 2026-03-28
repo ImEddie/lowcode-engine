@@ -97,11 +97,13 @@ class GlobalLocale {
   }
 
   setLocale(locale: string) {
-    logger.info(`setting locale to ${locale}`);
-    if (locale === this.locale) {
+    // Normalize short codes (e.g., 'en' -> 'en-US', 'ms' -> 'ms-MY')
+    const normalized = languageMap[locale] || locale;
+    logger.info(`setting locale to ${normalized}`);
+    if (normalized === this.locale) {
       return;
     }
-    this._locale = locale;
+    this._locale = normalized;
     if (hasLocalStorage(window)) {
       const store = window.localStorage;
       let config: any;
@@ -112,14 +114,14 @@ class GlobalLocale {
       }
 
       if (config && typeof config === 'object') {
-        config.locale = locale;
+        config.locale = normalized;
       } else {
-        config = { locale };
+        config = { locale: normalized };
       }
 
       store.setItem(LowcodeConfigKey, JSON.stringify(config));
     }
-    this.emitter.emit('localechange', locale);
+    this.emitter.emit('localechange', normalized);
   }
 
   getLocale() {
@@ -148,5 +150,10 @@ function hasLocalStorage(obj: any): obj is WindowLocalStorage {
 }
 
 let globalLocale = new GlobalLocale();
+
+export function toShortLocale(locale: string): string {
+  const entry = Object.entries(languageMap).find(([, full]) => full === locale);
+  return entry ? entry[0] : locale.split('-')[0];
+}
 
 export { globalLocale };

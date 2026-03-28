@@ -12,6 +12,7 @@ import {
   IEditor,
   Command as InnerCommand,
 } from '@alilc/lowcode-editor-core';
+import * as editorCore from '@alilc/lowcode-editor-core';
 import {
   IPublicTypeEngineOptions,
   IPublicModelDocumentModel,
@@ -200,6 +201,7 @@ export {
   canvas,
   commonUI,
   command,
+  editorCore,
 };
 // declare this is open-source version
 export const isOpenSource = true;

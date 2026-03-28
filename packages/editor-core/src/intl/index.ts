@@ -1,6 +1,6 @@
 import { ReactNode, Component, createElement } from 'react';
 import { IntlMessageFormat } from 'intl-messageformat';
-import { globalLocale } from './global-locale';
+import { globalLocale, toShortLocale } from './global-locale';
 import { isI18nData } from '@alilc/lowcode-utils';
 import { observer } from '../utils';
 import { IPublicTypeI18nData } from '@alilc/lowcode-types';
@@ -89,8 +89,7 @@ export function createIntl(
     getLocale(): string;
     setLocale(locale: string): void;
   } {
-  // TODO: make reactive
-  const data = (() => {
+  function getData() {
     const locale = globalLocale.getLocale();
     if (typeof instance === 'string') {
       if ((window as any)[instance]) {
@@ -103,10 +102,10 @@ export function createIntl(
       return (instance as any)[locale] || {};
     }
     return {};
-  })();
+  }
 
   function intl(key: string, params?: object): string {
-    // TODO: tries lost language
+    const data = getData();
     const str = data[key];
 
     if (str == null) {
@@ -138,4 +137,4 @@ export function createIntl(
   };
 }
 
-export { globalLocale };
+export { globalLocale, toShortLocale };
